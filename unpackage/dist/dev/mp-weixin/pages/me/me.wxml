@@ -1,1 +1,1 @@
-<view><text class="iconfont icon-dati"></text></view>
+<view><login vue-id="8e55f700-1" bind:__l="__l"></login></view>

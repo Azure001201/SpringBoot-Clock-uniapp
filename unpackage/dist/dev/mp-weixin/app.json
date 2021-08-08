@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/group/group",
     "pages/feeds/feeds",
-    "pages/me/me"
+    "pages/me/me",
+    "pages/webview/webview"
   ],
   "subPackages": [],
   "window": {
@@ -42,6 +43,7 @@
       }
     ]
   },
-  "usingComponents": {},
-  "sitemapLocation": "sitemap.json"
+  "usingComponents": {
+    "login": "/components/login"
+  }
 }

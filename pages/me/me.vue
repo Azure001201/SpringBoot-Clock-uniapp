@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<text class="iconfont icon-dati"></text>
+		<login></login>
 	</view>
 </template>
 
@@ -9,14 +9,11 @@
 		data() {
 			return {
 				
-			}
-		},
-		methods: {
-			
+			};
 		}
 	}
 </script>
 
-<style>
+<style lang="scss">
 
 </style>

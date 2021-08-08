@@ -1,5 +1,8 @@
 <template>
 	<view id="index">
+		<!-- 登录状态确认 -->
+		<login ref="login"></login>
+		
 		<!-- 背景图片 -->
 		<image src="../../static/1.jpg" mode="widthFix" class="bg"></image>
 		<!-- 滚动公告 -->
