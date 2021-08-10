@@ -4,7 +4,6 @@
 		<view class="container">
 
 			<view class="close-box" @tap="closeLogin" bind:tap="cancel">
-				<!-- <image class="close-img" src="/static/close.png" /> -->
 				<u-icon name="close"></u-icon>
 			</view>
 
@@ -59,11 +58,16 @@
 </template>
 
 <script>
+	import {
+		mapState,
+		mapActions
+	} from 'vuex'
+	
 	export default {
 		data() {
 			return {
 				show: true,
-				getUserInfoTag: true,
+				getUserInfoTag : false,
 				// 登陆方式
 				loginType: 'pwlogin',
 				// 登陆方式选择器
@@ -211,13 +215,20 @@
 				}
 			}
 		},
+		computed: {
+			...mapState(['loginState', 'userInfo'])
+		},
+		// 应用校验规则
+		onReady() {
+			this.$refs.uForm.setRules(this.rules);
+		},
 		created() {
 			wx.getSetting({
 				success: res => {
 					if (res.authSetting["scope.userInfo"]) {
 						uni.getUserInfo({
 							success: res => {
-								this.getUserInfoTag = false
+								// this.getUserInfoTag = false
 								this.form.login = res.userInfo.nickName
 								this.form.name = res.userInfo.nickName
 								this.form.avatar = res.userInfo.avatarUrl
@@ -230,11 +241,8 @@
 				}
 			})
 		},
-		// 应用校验规则
-		onReady() {
-			this.$refs.uForm.setRules(this.rules);
-		},
 		methods: {
+			...mapActions(['userLoginAction', 'userLogoutAction']),
 			// 关闭弹窗
 			closeLogin() {
 				this.show = false
@@ -243,15 +251,16 @@
 				this.show = true
 			},
 			// 跳转页面
-			gotoWeb(url) {
-				wx.navigateTo({
-					url: '/pages/webview/webview?url=' + encodeURI(url)
-				})
-			},
+			// gotoWeb(url) {
+			// 	wx.navigateTo({
+			// 		url: '/pages/webview/webview?url=' + encodeURI(url)
+			// 	})
+			// },
 			// 微信授权
 			getWechatUserInfo() {
 				uni.getUserInfo({
 					success: res => {
+						console.log(res)
 						this.getUserInfoTag = false
 						this.form.login = res.userInfo.nickName
 						this.form.name = res.userInfo.nickName

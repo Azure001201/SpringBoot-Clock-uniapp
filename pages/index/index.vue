@@ -83,6 +83,7 @@
 		width: 750rpx;
 		height: 500rpx;
 		left: 0;
+		bottom: 0;
 		top: 750rpx;
 		z-index: 99;
 	}
