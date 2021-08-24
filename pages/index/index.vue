@@ -1,45 +1,47 @@
 <template>
 	<view id="index">
 		<!-- 登录状态确认 -->
-		<login ref="login"></login>
+		<login ref="login" v-if="!loginState"></login>
 		
 		<!-- 背景图片 -->
 		<image src="../../static/1.jpg" mode="widthFix" class="bg"></image>
 		<!-- 滚动公告 -->
 		<view class="notice">
-				<u-notice-bar mode="horizontal" :list="list"></u-notice-bar>
+				<u-notice-bar mode="horizontal" type="primary" :list="list"></u-notice-bar>
 		</view>
+		<!-- 下面的半圆导航 -->
+		<view class="view-circle" />
 		<!-- 打卡选项卡 -->
 		<view class="clock_in_type">
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-xueshengdushu"></text>
 				<text class="detail">\n学习</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-dati "></text>
 				<text class="detail">\n练字</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-yueliang"></text>
 				<text class="detail">\n早睡</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-richu"></text>
 				<text class="detail">\n早起</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-paobu"></text>
 				<text class="detail">\n运动</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-sheng"></text>
 				<text class="detail">\n省钱</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-jinyong"></text>
 				<text class="detail">\n禁X</text>
 			</view>
-			<view class="t1">
+			<view class="t1" @tap.stop="gotoClock()">
 				<text class="iconfont icon-shenglvehao"></text>
 				<text class="detail">\n其他</text>
 			</view>
@@ -49,6 +51,10 @@
 </template>
 
 <script>
+	import {
+		mapState,
+		mapActions
+	} from 'vuex'
 	export default {
 		data() {
 			return{
@@ -60,8 +66,16 @@
 		onLoad() {
 			
 		},
+		computed: {
+			...mapState(['loginState', 'userInfo'])
+		},
 		methods: {
-			
+			gotoClock(){
+				uni.navigateTo({
+					url:"/subpages/clock/clock"
+				})
+			},
+		
 		}
 	}
 </script>
@@ -78,7 +92,21 @@
 		margin-top: 100rpx;
 		z-index: 99999999;
 	}
+	.view-circle {
+		overflow: hidden;
+		border-width: 0;
+		border-style: solid;
+		position: absolute;
+		z-index: 9;
+		width: 750upx;
+		height: 300upx;
+		background: url(@/static/half-circle.png) no-repeat center;
+		background-size: cover;
+		bottom: 490upx;
+		overflow-x: hidden;
+	}
 	.clock_in_type{
+		background-color: #FFFFFF;
 		position: absolute;
 		width: 750rpx;
 		height: 500rpx;

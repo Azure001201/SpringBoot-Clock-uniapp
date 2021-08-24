@@ -7,39 +7,25 @@
 				<u-icon name="close"></u-icon>
 			</view>
 
-			<view class="p-name" v-if="getUserInfoTag">
+			<view class="p-name" v-if="!getUserInfoTag">
 				欢迎使用星星打卡
 			</view>
 
-			<button class="submit-btn" open-type="getUserInfo" @getuserinfo="getWechatUserInfo" v-if="getUserInfoTag">
+			<button class="submit-btn" open-type="getUserInfo" @getuserinfo="getWechatUserInfo" v-if="!getUserInfoTag">
 				<text class="iconfont icon-wechat">点击获取微信用户信息</text>
 			</button>
 
-			<u-form :model="form" ref="uForm" v-show="!getUserInfoTag">
-				<u-form-item label="账号" prop="login" label-width="150" required v-if="loginType === 'pwlogin'">
-					<u-input v-model="form.login" placeholder='输入手机号/昵称' />
+			<u-form :model="form" ref="uForm" v-show="getUserInfoTag">
+				<u-form-item label="用户名" prop="name" label-width="150" required v-if="loginType !== 'pwlogin'">
+					<u-input v-model="form.name" placeholder='输入用户名/昵称' />
 				</u-form-item>
-
-				<u-form-item label="昵称" prop="name" label-width="150" required
-					v-if="loginType === 'phone' || loginType === 'email'">
-					<u-input v-model="form.name" placeholder='2-10个字符' />
+				<u-form-item label="账号" prop="account" label-width="150" required>
+					<u-input v-model="form.account" placeholder='输入账号' />
 				</u-form-item>
-
-				<u-form-item label="电话" prop="phone" label-width="150" required
-					v-if="loginType === 'phone' || loginType === 'codelogin'">
-					<u-input v-model="form.phone" placeholder='输入11位手机号码' />
-				</u-form-item>
-
-				<u-form-item label="验证码" prop="code" required label-width="150" v-if="loginType !== 'pwlogin'">
-					<u-input placeholder="请输入4位验证码" v-model="form.code" type="text"></u-input>
-					<u-button slot="right" type="success" size="mini" @click="getCode">获取验证码</u-button>
-				</u-form-item>
-
-				<u-form-item label="密码" label-width="150" required prop="password" v-if="loginType !== 'codelogin'">
+				<u-form-item label="密码" label-width="150" required prop="password">
 					<u-input v-model="form.password" type="password" placeholder='限4-20个字符,区分大小写' />
 				</u-form-item>
-				<u-form-item label="重复密码" required label-width="150" prop="repassword"
-					v-if="loginType === 'phone' || loginType === 'email'">
+				<u-form-item label="重复密码" required label-width="150" prop="repassword" v-if="loginType !== 'pwlogin'">
 					<u-input v-model="form.repassword" type="password" placeholder='再次输入密码' />
 				</u-form-item>
 				<view class="btns">
@@ -62,38 +48,33 @@
 		mapState,
 		mapActions
 	} from 'vuex'
-	
+
 	export default {
 		data() {
 			return {
 				show: true,
-				getUserInfoTag : false,
+				getUserInfoTag: false,
 				// 登陆方式
 				loginType: 'pwlogin',
 				// 登陆方式选择器
 				subsectionList: [{
-						name: '密码登陆'
+						name: '登陆'
 					},
 					{
-						name: '验证码登陆'
-					},
-					{
-						name: '手机注册'
+						name: '注册'
 					},
 				],
 				// 用户信息输入框
 				form: {
-					login: '',
+					account: '',
 					avatar: '',
 					name: '',
-					phone: '',
-					code: '',
 					password: '',
 					repassword: ''
 				},
 				// 用户登录校验规则
 				rules: {
-					// 密码登陆账号校验，该输入可以是：手机号、昵称
+					// 密码登陆账号校验
 					login: [{
 						validator: (rule, value, callback) => {
 							// 只有在 密码登陆 的情况下才需要进行前端规则校验
@@ -106,107 +87,19 @@
 						message: '必填 * 输入内容不许为空',
 						trigger: ['change', 'blur'],
 					}],
-					// 电话、邮件注册校验
-					name: [{
-							asyncValidator: async (rule, value, callback) => {
-								// 只有在电话注册的时候才会触发该校验规则
-								if (this.loginType === 'phone' || this.loginType === 'email') {
-									let res = await this.$u.api.findUser({
-										name: value
-									})
-									if (!!value && res.statusCode === 200) {
-										callback(new Error('当前用户昵称已存在'))
-									} else {
-										callback()
-									}
-								} else {
-									callback()
-								}
-							},
-							trigger: ['blur'],
-						},
-						{
-							validator: (rule, value, callback) => {
-								if (this.loginType === 'phone' || this.loginType === 'email') {
-									return this.$u.test.rangeLength(value, [2, 10])
-								} else {
-									return true
-								}
-							},
-							message: '必填 * 昵称长度不得小于2位大于10位',
-							trigger: ['change', 'blur'],
-						}
-					],
-					// 手机验证码登陆、手机验证码注册 使用
-					phone: [{
-							asyncValidator: async (rule, value, callback) => {
-								// 只有在手机验证码注册的时候，才需要判断当前手机号码是否已经被注册
-								if (this.loginType === 'phone') {
-									let res = await this.$u.api.findUser({
-										name: value
-									})
-									if (!!value && res.statusCode === 200) {
-										callback(new Error('当前电话已注册'))
-									} else {
-										// 如果校验通过，也要执行callback()回调
-										callback()
-									}
-								} else {
-									callback()
-								}
-							},
-							trigger: ['blur'],
-						},
-						{
-							validator: (rule, value, callback) => {
-								// 手机号码格式判断
-								if (this.loginType === 'codelogin' || this.loginType === 'phone') {
-									// 自带判断 电话号码合法性方法
-									return this.$u.test.mobile(value)
-								} else {
-									return true
-								}
-							},
-							message: '必填 * 手机号码输入不正确',
-							trigger: ['change', 'blur'],
-						}
-					],
-					// 验证码验证
-					code: [{
-						validator: (rule, value, callback) => {
-							if (this.loginType !== 'pwlogin') {
-								// 名字长度为 2-10 位
-								return value === '8888'
-							} else {
-								return true
-							}
-						},
-						message: '必填 * 验证码长度为4位',
-						// 触发器可以同时用blur和change
-						trigger: ['change', 'blur'],
-					}],
+
 					// 密码验证
 					password: [{
 						validator: (rule, value, callback) => {
 							// 除了 手机验证码登陆 其他均需要验证
-							if (this.loginType !== 'codelogin') {
-								// 名字长度为 2-10 位
-								return (value.length >= 4 && value.length <= 20)
-							} else {
-								return true
-							}
+							return true
 						},
 						message: '必填  * 请输入 4-20 位密码',
 						trigger: ['change', 'blur'],
 					}],
 					repassword: [{
 						validator: (rule, value, callback) => {
-							if (this.loginType === 'phone' || this.loginType === 'email') {
-								return this.form.password === value
-							} else {
-								return false
-							}
-
+							return this.form.password === value
 						},
 						message: '必填 * 两次密码输入不一致',
 						// 触发器可以同时用blur和change
@@ -225,11 +118,11 @@
 		created() {
 			wx.getSetting({
 				success: res => {
-					if (res.authSetting["scope.userInfo"]) {
+					console.log(res.authSetting["scope.userInfo"])
+					if (!res.authSetting["scope.userInfo"]) {
 						uni.getUserInfo({
 							success: res => {
-								// this.getUserInfoTag = false
-								this.form.login = res.userInfo.nickName
+								this.getUserInfoTag = true
 								this.form.name = res.userInfo.nickName
 								this.form.avatar = res.userInfo.avatarUrl
 							},
@@ -260,9 +153,7 @@
 			getWechatUserInfo() {
 				uni.getUserInfo({
 					success: res => {
-						console.log(res)
-						this.getUserInfoTag = false
-						this.form.login = res.userInfo.nickName
+						this.getUserInfoTag = true
 						this.form.name = res.userInfo.nickName
 						this.form.avatar = res.userInfo.avatarUrl
 					},
@@ -271,24 +162,7 @@
 					}
 				})
 			},
-			// 获取验证码
-			async getCode() {
-				let pcode = await this.$u.api.getLoginCode({
-					phone: this.form.phone
-				})
-				if (!!pcode.data.message && pcode.data.message[0] === "获取成功") {
-					uni.showModal({
-						title: '验证码获取成功',
-						content: '8888'
-					})
-				} else {
-					uni.showModal({
-						title: '验证码获取失败',
-						content: pcode.data.errors.phone[0]
-					})
-				}
-			},
-			submit() {
+			async submit() {
 				this.$refs.uForm.validate(async valid => {
 					if (!valid) {
 						uni.showToast({
@@ -297,92 +171,89 @@
 						})
 						return false
 					}
-					switch (this.loginType) {
-						case "pwlogin":
-							let resa = await this.$u.api.userLogin({
-								login: this.form.login,
-								password: this.form.password,
-							})
-							if (resa.statusCode === 200) {
-								// 登陆成功
-								this.loginAfter(resa.data.access_token)
-							} else {
-								uni.showModal({
-									title: '登陆失败',
-									content: resa.data.message
-								})
+					if (this.loginType === "pwlogin") {
+						let res = await this.$u.api.userLogin({
+							"account": this.form.account,
+							"password": this.form.password
+						})
+						if (res.code === 200) {
+							// 登陆成功
+							this.show = false
+							let name = this.form.name
+							let loginInfo = {
+								name,
+								avatar: this.form.avatar,
 							}
-							break;
-						case "codelogin":
-							let resaa = await this.$u.api.userLogin({
-								login: this.form.phone,
-								verifiable_code: '8888'
+							this.userLoginAction(loginInfo)
+							// this.loginAfter(res)
+							uni.$emit('meUserLogin')
+							uni.$emit('indexUserLogin')
+						} else {
+							uni.showModal({
+								title: '登陆失败',
+								content: res.data.message
 							})
-							if (resaa.statusCode === 200) {
-								// 登陆成功
-								this.loginAfter(resaa.data.access_token)
-							} else {
-								uni.showModal({
-									title: '登陆失败',
-									content: resaa.data.message
-								})
-							}
-							break;
-						case "phone":
-							let resb = await this.$u.api.userRegister({
-								// 必须，用户名
-								name: this.form.name,
-								// 必须，验证码发送模式。
-								verifiable_type: 'sms',
-								// 必须，用户收到的验证码。
-								verifiable_code: '8888',
-								// 如果 `verifiable_type` 为 `sms` 则必须, 手机号码。
-								phone: this.form.phone,
-								// 可选，密码，如果不输入密码，允许用户无密码注册。
-								password: this.form.password
+						}
+					} else {
+						let resa = await this.$u.api.userRegister({
+							"account": this.form.account,
+							"password": this.form.password,
+							"role": 1,
+							"id": 1
+						})
+						console.log(resa)
+						if (resa.code === 200) {
+							// 注册成功
+							uni.showModal({
+								title: '注册成功'
 							})
-							if (resb.statusCode === 201) {
-								// 登陆成功
-								this.loginAfter(resb.data.token)
-							} else {
-								uni.showModal({
-									title: '登陆失败',
-									content: resb.data.message
-								})
-							}
-							break;
-						default:
-							uni.showToast({
-								title: '未知用户状态',
-								icon: 'loading'
+							this.sectionChange()
+							this.loginType = "pwlogin"
+						} else {
+							uni.showModal({
+								title: '注册失败',
+								content: resa.data.message
 							})
-							break;
+						}
 					}
+
 				});
-			
+
 			},
 			// 取消表单输入
 			cancel() {
 				this.form = {
-					login: '',
+					account: '',
 					name: '',
-					phone: '',
-					code: '',
 					password: '',
 					repassword: ''
 				}
 			},
+			// 注册、登陆成功后设置相关逻辑
+			// async loginAfter(token) {
+			// 	this.show = false
+			// 	uni.setStorageSync('token', token)
+
+			// 	console.log("登陆之后触发的操作")
+
+			// 	let name = this.form.name
+			// 	let loginInfo = {
+			// 		name,
+			// 		avatar: this.form.avatar,
+			// 		// commented: res.data.user.commented
+			// 	}
+			// 	this.userLoginAction(loginInfo)
+			// 	uni.$emit('meUserLogin')
+			// 	uni.$emit('indexUserLogin')
+			// },
 			// 更改 登陆 注册 方式选择
 			sectionChange(index) {
 				switch (index) {
-					case 1:
-						this.loginType = "codelogin";
-						break;
-					case 2:
-						this.loginType = "phone";
-						break;
-					default:
+					case 0:
 						this.loginType = "pwlogin";
+						break;
+					case 1:
+						this.loginType = "register";
 						break;
 				}
 			}

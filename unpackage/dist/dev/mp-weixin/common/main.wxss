@@ -26,9 +26,9 @@
 /* 文章场景相关 */
 @font-face {
   font-family: "iconfont"; /* Project id 2720185 */
-  src: url('//at.alicdn.com/t/font_2720185_ntjurhmkp7.woff2?t=1628410980458') format('woff2'),
-       url('//at.alicdn.com/t/font_2720185_ntjurhmkp7.woff?t=1628410980458') format('woff'),
-       url('//at.alicdn.com/t/font_2720185_ntjurhmkp7.ttf?t=1628410980458') format('truetype');
+  src: url('//at.alicdn.com/t/font_2720185_ibv4uke2u0n.woff2?t=1629553972397') format('woff2'),
+       url('//at.alicdn.com/t/font_2720185_ibv4uke2u0n.woff?t=1629553972397') format('woff'),
+       url('//at.alicdn.com/t/font_2720185_ibv4uke2u0n.ttf?t=1629553972397') format('truetype');
 }
 .iconfont {
   font-family: "iconfont" !important;
@@ -36,6 +36,12 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.icon-setting:before {
+  content: "\e657";
+}
+.icon-bell:before {
+  content: "\e6bb";
 }
 .icon-wechat:before {
   content: "\e600";
@@ -92,8 +98,7 @@ image {
 }
 view,
 text {
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
 .u-font-xs {
   font-size: 22rpx;
@@ -3206,8 +3211,7 @@ page {
   left: 0;
   top: 0;
   pointer-events: none;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
   width: 199.8%;

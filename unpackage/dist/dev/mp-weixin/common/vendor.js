@@ -282,10 +282,14 @@ var promiseInterceptor = {
     if (!isPromise(res)) {
       return res;
     }
-    return res.then(function (res) {
-      return res[1];
-    }).catch(function (res) {
-      return res[0];
+    return new Promise(function (resolve, reject) {
+      res.then(function (res) {
+        if (res[0]) {
+          reject(res[0]);
+        } else {
+          resolve(res[1]);
+        }
+      });
     });
   } };
 
@@ -872,7 +876,7 @@ function initData(vueOptions, context) {
     try {
       data = data.call(context); // 支持 Vue.prototype 上挂的数据
     } catch (e) {
-      if (Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.warn('根据 Vue 的 data 函数初始化小程序 data 失败，请尽量确保 data 函数中不访问 vm 对象，否则可能影响首次数据渲染速度。', data);
       }
     }
@@ -6549,7 +6553,7 @@ function initProps (vm, propsOptions) {
       defineReactive$$1(props, key, value, function () {
         if (!isRoot && !isUpdatingChildComponent) {
           {
-            if(vm.mpHost === 'mp-baidu'){//百度 observer 在 setData callback 之后触发，直接忽略该 warn
+            if(vm.mpHost === 'mp-baidu' || vm.mpHost === 'mp-kuaishou'){//百度、快手 observer 在 setData callback 之后触发，直接忽略该 warn
                 return
             }
             //fixed by xxxxxx __next_tick_pending,uni://form-field 时不告警
@@ -7456,7 +7460,7 @@ function type(obj) {
 
 function flushCallbacks$1(vm) {
     if (vm.__next_tick_callbacks && vm.__next_tick_callbacks.length) {
-        if (Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+        if (Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:flushCallbacks[' + vm.__next_tick_callbacks.length + ']');
@@ -7477,14 +7481,14 @@ function nextTick$1(vm, cb) {
     //1.nextTick 之前 已 setData 且 setData 还未回调完成
     //2.nextTick 之前存在 render watcher
     if (!vm.__next_tick_pending && !hasRenderWatcher(vm)) {
-        if(Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + vm._uid +
                 ']:nextVueTick');
         }
         return nextTick(cb, vm)
     }else{
-        if(Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG){
+        if(Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG){
             var mpInstance$1 = vm.$scope;
             console.log('[' + (+new Date) + '][' + (mpInstance$1.is || mpInstance$1.route) + '][' + vm._uid +
                 ']:nextMPTick');
@@ -7570,7 +7574,7 @@ var patch = function(oldVnode, vnode) {
     });
     var diffData = this.$shouldDiffData === false ? data : diff(data, mpData);
     if (Object.keys(diffData).length) {
-      if (Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}).VUE_APP_DEBUG) {
+      if (Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}).VUE_APP_DEBUG) {
         console.log('[' + (+new Date) + '][' + (mpInstance.is || mpInstance.route) + '][' + this._uid +
           ']差量更新',
           JSON.stringify(diffData));
@@ -10635,7 +10639,6 @@ var store = new _vuex.default.Store({
 
       uni.clearStorageSync('userInfo');
       uni.clearStorageSync('loginState');
-      uni.clearStorageSync('token');
     } },
 
   actions: {
@@ -11763,8 +11766,108 @@ var index = {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ 3)))
 
 /***/ }),
-/* 42 */,
-/* 43 */,
+/* 42 */
+/*!****************************************************!*\
+  !*** C:/文档/uniapp/card/common/http.interceptor.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; // /common/http.interceptor.js
+
+// 这里的vm，就是我们在vue文件里面的this，所以我们能在这里获取vuex的变量，比如存放在里面的token变量
+var install = function install(Vue, vm) {
+  // 此为自定义配置参数，具体参数见上方说明
+  Vue.prototype.$u.http.setConfig({
+    baseUrl: 'http://localhost:1013/',
+    loadingText: '努力加载中~',
+    loadingTime: 800
+    // ......
+  });
+
+  // 请求拦截，配置Token等参数
+  Vue.prototype.$u.http.interceptor.request = function (config) {
+    // 引用token
+    // 方式一，存放在vuex的token，假设使用了uView封装的vuex方式
+    // 见：https://uviewui.com/components/globalVariable.html
+    // config.header.token = vm.token;
+
+    // 方式二，如果没有使用uView封装的vuex方法，那么需要使用$store.state获取
+    // config.header.token = vm.$store.state.token;
+
+    // 方式三，如果token放在了globalData，通过getApp().globalData获取
+    // config.header.token = getApp().globalData.username;
+
+    // 方式四，如果token放在了Storage本地存储中，拦截是每次请求都执行的
+    // 所以哪怕您重新登录修改了Storage，下一次的请求将会是最新值
+    // const token = uni.getStorageSync('token');
+    // config.header.token = token;
+    config.header.Token = 'xxxxxx';
+
+    // 可以对某个url进行特别处理，此url参数为this.$u.get(url)中的url值
+    if (config.url == '/user/login') config.header.noToken = true;
+    // 最后需要将config进行return
+    return config;
+    // 如果return一个false值，则会取消本次请求
+    // if(config.url == '/user/rest') return false; // 取消某次请求
+  };
+
+  // 响应拦截，判断状态码是否通过
+  Vue.prototype.$u.http.interceptor.response = function (res) {
+    console.log(res);
+    if (res.code == 200) {
+      // res为服务端返回值，可能有code，result等字段
+      // 这里对res.result进行返回，将会在this.$u.post(url).then(res => {})的then回调中的res的到
+      // 如果配置了originalData为true，请留意这里的返回值
+      return res;
+    } else if (res.code == 201) {
+      // 假设201为token失效，这里跳转登录
+      vm.$u.toast('验证失败，请重新登录');
+      setTimeout(function () {
+        // 此为uView的方法，详见路由相关文档
+        vm.$u.route('/pages/user/login');
+      }, 1500);
+      return false;
+    } else {
+      // 如果返回false，则会调用Promise的reject回调，
+      // 并将进入this.$u.post(url).then().catch(res=>{})的catch回调中，res为服务端的返回值
+      return false;
+    }
+  };
+};var _default =
+
+{
+  install: install };exports.default = _default;
+
+/***/ }),
+/* 43 */
+/*!********************************************!*\
+  !*** C:/文档/uniapp/card/common/http.api.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; // 此处第二个参数vm，就是我们在页面使用的this，你可以通过vm获取vuex等操作，更多内容详见uView对拦截器的介绍部分：
+// https://uviewui.com/js/http.html#%E4%BD%95%E8%B0%93%E8%AF%B7%E6%B1%82%E6%8B%A6%E6%88%AA%EF%BC%9F
+var install = function install(Vue, vm) {
+  var api = {};
+
+  // 注册
+  api.userRegister = function (params) {return vm.$u.post('user/register', params);};
+
+  // 登陆
+  api.userLogin = function (params) {return vm.$u.post('user/login', params);};
+
+  // 将各个定义的接口名称，统一放进对象挂载到vm.$u.api(因为vm就是this，也即this.$u.api)下
+  vm.$u.api = api;
+};var _default =
+
+{
+  install: install };exports.default = _default;
+
+/***/ }),
 /* 44 */,
 /* 45 */,
 /* 46 */,
@@ -11793,7 +11896,55 @@ var index = {
 /* 69 */,
 /* 70 */,
 /* 71 */,
-/* 72 */,
+/* 72 */
+/*!********************************************!*\
+  !*** C:/文档/uniapp/card/mixins/todoFeed.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 19));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}var feedMixin = {
+  methods: {
+    // 点赞或者取消点赞一条动态
+    clickLove: function clickLove(item) {var _this = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:if (
+
+                _this.loginState) {_context.next = 3;break;}
+                _this.$refs.login.openLogin();return _context.abrupt("return");case 3:if (!
+
+
+
+                item.has_like) {_context.next = 11;break;}
+                --item.like_count;
+                item.has_like = false;_context.next = 8;return (
+                  _this.$u.api.unlikeThisFeed({
+                    id: item.id }));case 8:
+
+                uni.showToast({
+                  title: "取消点赞",
+                  icon: "success",
+                  duration: 1000 });_context.next = 16;break;case 11:
+
+
+                ++item.like_count;
+                item.has_like = true;_context.next = 15;return (
+                  _this.$u.api.likeThisFeed({
+                    id: item.id }));case 15:
+
+                uni.showToast({
+                  title: "点赞成功",
+                  icon: "success",
+                  duration: 1000 });case 16:
+
+
+                uni.$emit('myFeedLoveChange', item);case 17:case "end":return _context.stop();}}}, _callee);}))();
+    } } };var _default =
+
+
+feedMixin;exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
+
+/***/ }),
 /* 73 */,
 /* 74 */,
 /* 75 */,
@@ -11828,7 +11979,57 @@ var index = {
 /* 104 */,
 /* 105 */,
 /* 106 */,
-/* 107 */
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */,
+/* 149 */,
+/* 150 */,
+/* 151 */,
+/* 152 */,
+/* 153 */,
+/* 154 */,
+/* 155 */,
+/* 156 */,
+/* 157 */
 /*!********************************************************************!*\
   !*** C:/文档/uniapp/card/node_modules/uview-ui/libs/util/emitter.js ***!
   \********************************************************************/
@@ -11887,7 +12088,7 @@ function _broadcast(componentName, eventName, params) {
     } } };exports.default = _default;
 
 /***/ }),
-/* 108 */
+/* 158 */
 /*!****************************************************************************!*\
   !*** C:/文档/uniapp/card/node_modules/uview-ui/libs/util/async-validator.js ***!
   \****************************************************************************/
@@ -11917,7 +12118,7 @@ function _broadcast(componentName, eventName, params) {
 var formatRegExp = /%[sdj%]/g;
 var warning = function warning() {}; // don't print warning message when in production env or node runtime
 
-if (typeof process !== 'undefined' && Object({"VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","NODE_ENV":"development","BASE_URL":"/"}) && "development" !== 'production' && typeof window !==
+if (typeof process !== 'undefined' && Object({"NODE_ENV":"development","VUE_APP_NAME":"card","VUE_APP_PLATFORM":"mp-weixin","BASE_URL":"/"}) && "development" !== 'production' && typeof window !==
 'undefined' && typeof document !== 'undefined') {
   warning = function warning(type, errors) {
     if (typeof console !== 'undefined' && console.warn) {
@@ -13250,10 +13451,10 @@ Schema.warning = warning;
 Schema.messages = messages;var _default =
 
 Schema;exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../SoftWare Index/HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 109)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../SoftWare Index/HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 159)))
 
 /***/ }),
-/* 109 */
+/* 159 */
 /*!********************************************************!*\
   !*** ./node_modules/node-libs-browser/mock/process.js ***!
   \********************************************************/
@@ -13284,7 +13485,7 @@ exports.binding = function (name) {
     var path;
     exports.cwd = function () { return cwd };
     exports.chdir = function (dir) {
-        if (!path) path = __webpack_require__(/*! path */ 110);
+        if (!path) path = __webpack_require__(/*! path */ 160);
         cwd = path.resolve(dir, cwd);
     };
 })();
@@ -13297,7 +13498,7 @@ exports.features = {};
 
 
 /***/ }),
-/* 110 */
+/* 160 */
 /*!***********************************************!*\
   !*** ./node_modules/path-browserify/index.js ***!
   \***********************************************/
@@ -13607,7 +13808,7 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 109)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 159)))
 
 /***/ })
 ]]);

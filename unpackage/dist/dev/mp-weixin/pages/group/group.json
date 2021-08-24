@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "小组",
-  "enablePullDownRefresh": false,
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
   "usingComponents": {}
 }

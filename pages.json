@@ -1,87 +1,111 @@
 {
-	
+
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle": "custom",
-				"enablePullDownRefresh":true
+				"enablePullDownRefresh": true
 			}
 		},
 		{
-            "path" : "pages/group/group",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "小组",
-                "enablePullDownRefresh": false
-            }
-            
-        },
+			"path": "pages/group/group",
+			"style": {
+			"navigationStyle": "custom",
+			"enablePullDownRefresh": true
+			}
+
+		},
 		{
-            "path" : "pages/feeds/feeds",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "动态",
-                "enablePullDownRefresh": false
-            }
-            
-        },
+			"path": "pages/feeds/feeds",
+			"style": {
+			"navigationStyle": "custom",
+			"enablePullDownRefresh": true
+			}
+
+		},
 		{
-            "path" : "pages/me/me",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "个人中心",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/webview/webview",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+			"path": "pages/me/me",
+			"style": {
+			"navigationStyle": "custom",
+			"enablePullDownRefresh": true
+			}
+
+		}, {
+			"path": "pages/webview/webview",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"subPackages": [{
+		"root": "subpages",
+		"pages": [{
+			"path": "feedinfo/feedinfo",
+			"style": {
+				"navigationBarTitleText": "动态详情",
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"navigationBarTextStyle": "black",
+				"backgroundColor": "#FFFFFF"
+			}
+		}, {
+			"path": "setting/setting",
+			"style": {
+				"navigationBarTitleText": "设置中心",
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"navigationBarTextStyle": "black",
+				"backgroundColor": "#FFFFFF"
+			}
+		},{
+				"path": "clock/clock",
+				"style": {
+					"navigationBarTitleText": "打卡",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"navigationBarTextStyle": "black",
+					"backgroundColor": "#FFFFFF"
+				}
+		}]
+	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
-	"tabBar":{
-		"color":"000",
-		"selectedColor":"#007AFF",
-		"list":[{
-			"iconPath":"./static/icon/home.png",
-			"selectedIconPath":"./static/icon/home2.png",
-			"text":"首页",
-			"pagePath":"pages/index/index"
-		},
-		{
-			"iconPath":"./static/icon/group.png",
-			"selectedIconPath":"./static/icon/group2.png",
-			"text":"我的小组",
-			"pagePath":"pages/group/group"
-		},
-		{
-			"iconPath":"./static/icon/feeds.png",
-			"selectedIconPath":"./static/icon/feeds2.png",
-			"text":"动态中心",
-			"pagePath":"pages/feeds/feeds"
-			
-		},
-		{
-			"iconPath":"./static/icon/me.png",
-			"selectedIconPath":"./static/icon/me2.png",
-			"text":"我的",
-			"pagePath":"pages/me/me"
-		}]
+	"tabBar": {
+		"color": "000",
+		"selectedColor": "#007AFF",
+		"list": [{
+				"iconPath": "./static/icon/home.png",
+				"selectedIconPath": "./static/icon/home2.png",
+				"text": "首页",
+				"pagePath": "pages/index/index"
+			},
+			// {
+			// 	"iconPath": "./static/icon/group.png",
+			// 	"selectedIconPath": "./static/icon/group2.png",
+			// 	"text": "我的小组",
+			// 	"pagePath": "pages/group/group"
+			// },
+			{
+				"iconPath": "./static/icon/feeds.png",
+				"selectedIconPath": "./static/icon/feeds2.png",
+				"text": "动态中心",
+				"pagePath": "pages/feeds/feeds"
+
+			},
+			{
+				"iconPath": "./static/icon/me.png",
+				"selectedIconPath": "./static/icon/me2.png",
+				"text": "我的",
+				"pagePath": "pages/me/me"
+			}
+		]
 	},
 	"easycom": {
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	}
-	
+
 }
