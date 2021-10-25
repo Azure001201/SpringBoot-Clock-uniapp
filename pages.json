@@ -11,24 +11,24 @@
 		{
 			"path": "pages/group/group",
 			"style": {
-			"navigationStyle": "custom",
-			"enablePullDownRefresh": true
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 
 		},
 		{
 			"path": "pages/feeds/feeds",
 			"style": {
-			"navigationStyle": "custom",
-			"enablePullDownRefresh": true
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 
 		},
 		{
 			"path": "pages/me/me",
 			"style": {
-			"navigationStyle": "custom",
-			"enablePullDownRefresh": true
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 
 		}, {
@@ -43,22 +43,31 @@
 	"subPackages": [{
 		"root": "subpages",
 		"pages": [{
-			"path": "feedinfo/feedinfo",
-			"style": {
-				"navigationBarTitleText": "动态详情",
-				"navigationBarBackgroundColor": "#FFFFFF",
-				"navigationBarTextStyle": "black",
-				"backgroundColor": "#FFFFFF"
-			}
-		}, {
-			"path": "setting/setting",
-			"style": {
-				"navigationBarTitleText": "设置中心",
-				"navigationBarBackgroundColor": "#FFFFFF",
-				"navigationBarTextStyle": "black",
-				"backgroundColor": "#FFFFFF"
-			}
-		},{
+				"path": "feedinfo/feedinfo",
+				"style": {
+					"navigationBarTitleText": "动态详情",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"navigationBarTextStyle": "black",
+					"backgroundColor": "#FFFFFF"
+				}
+			}, {
+				"path": "setting/setting",
+				"style": {
+					"navigationBarTitleText": "设置中心",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"navigationBarTextStyle": "black",
+					"backgroundColor": "#FFFFFF"
+				}
+			},
+			{
+				"path": "mygroup/mygroup",
+				"style": {
+					"navigationBarTitleText": "我的小组",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"navigationBarTextStyle": "black",
+					"backgroundColor": "#FFFFFF"
+				}
+			}, {
 				"path": "clock/clock",
 				"style": {
 					"navigationBarTitleText": "打卡",
@@ -66,7 +75,15 @@
 					"navigationBarTextStyle": "black",
 					"backgroundColor": "#FFFFFF"
 				}
-		}]
+			}, {
+				"path": "creategroup/creategroup",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}
+		]
 	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -83,12 +100,12 @@
 				"text": "首页",
 				"pagePath": "pages/index/index"
 			},
-			// {
-			// 	"iconPath": "./static/icon/group.png",
-			// 	"selectedIconPath": "./static/icon/group2.png",
-			// 	"text": "我的小组",
-			// 	"pagePath": "pages/group/group"
-			// },
+			{
+				"iconPath": "./static/icon/group.png",
+				"selectedIconPath": "./static/icon/group2.png",
+				"text": "我的小组",
+				"pagePath": "pages/group/group"
+			},
 			{
 				"iconPath": "./static/icon/feeds.png",
 				"selectedIconPath": "./static/icon/feeds2.png",
@@ -106,6 +123,12 @@
 	},
 	"easycom": {
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"app-plus": {
+		"optimization": {
+			"subPackages": true
+		},
+		"runmode": "liberate" // 开启分包优化后，必须配置资源释放模式
 	}
 
 }

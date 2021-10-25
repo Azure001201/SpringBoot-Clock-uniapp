@@ -1,163 +1,155 @@
 <template>
 	<view>
 		<view class="feed-user">
-			<u-avatar size="60" class="avatar" :src=" feedInfo.avatar" />
+			<u-avatar size="60" class="avatar" :src="feedInfo.uavg" />
 			<view class="info">
 				<text>{{ feedInfo.name }}</text>
 			</view>
 		</view>
 		<view class="feed-info">
-			<view class="title" v-if="!!feedInfo.feed_content">{{ feedInfo.feed_content }}</view>
-			<image class="feed-imgs" mode="widthFix" v-for="(image, index) in feedInfo.images" :key="index" :src="image"
-				@tap="previewImage(index)" />
+			<view class="title" v-if="!!feedInfo.dconcern">{{ feedInfo.dconcern }}</view>
+				<image class="feed-imgs" mode="widthFix" :src="feedInfo.dimg"/>
 			<view class="other">
-				<text>{{ feedInfo.created_at}} 发布</text>
-				<text>{{ feedInfo.feed_view_count }} 阅读 {{ feedInfo.like_count }} 点赞</text>
+				<text>{{ feedInfo.dtime}} 发布</text>
+				<view class="reply" @click="reply1">回复</view>
 			</view>
 		</view>
 		<!-- 评论区 -->
 		<view>
-			<view class="comment" v-for="(res, index) in commentList" :key="res.id">
-				<view class="left"><image :src="res.url" mode="aspectFill"></image></view>
+			<view class="comment" v-for="(res, i) in commentList" :key="res.rid">
+				<!-- <view class="left"><image :src="item.url" mode="aspectFill"></image></view> -->
 				<view class="right">
 					<view class="top">
-						<view class="name">{{ res.name }}</view>
-						<view class="like" :class="{ highlight: res.isLike }">
-							<view class="num">{{ res.likeNum }}</view>
-							<u-icon v-if="!res.isLike" name="thumb-up" :size="30" color="#9a9a9a" @click="getLike(index)"></u-icon>
-							<u-icon v-if="res.isLike" name="thumb-up-fill" :size="30" @click="getLike(index)"></u-icon>
-						</view>
+						<view class="name">{{ res.fromuname }}</view>
 					</view>
-					<view class="content">{{ res.contentText }}</view>
+					<view class="content">{{ res.rContents }}</view>
 					<view class="reply-box">
-						<view class="item" v-for="(item, index) in res.replyList" :key="item.index">
-							<view class="username">{{ item.name }}</view>
-							<view class="text">{{ item.contentStr }}</view>
-						</view>
-						<view class="all-reply" @tap="toAllReply" v-if="res.replyList != undefined">
-							共{{ res.allReply }}条回复
-							<u-icon class="more" name="arrow-right" :size="26"></u-icon>	
+						<view class="item" v-for="(item, index) in res.replyVOS" :key="item.rid">
+							<view class="username">{{ item.fromuname }}</view>
+							<view class="text">{{ item.rContents }}</view>
 						</view>
 					</view>
 					<view class="bottom">
-						{{ res.date }}
-						<view class="reply">回复</view>
+						{{ res.rTime }}
+						<view class="reply" @click="reply2({fid:res.rid,touid:res.fromuid})">回复</view>
 					</view>
 				</view>
 			</view>
 		</view>
+		<!-- 发布评论区域 -->
+		<view class="reply" v-if="isreply">
+			<u-input v-model="rContents" :type="text" :border="true" :focus= "true"/>
+			<u-button class="replyb" type="primary" size="medium" @click="RootReply({did:feedInfo.did,touid:feedInfo.uid})" v-if="isRootReply">回复</u-button>
+			<u-button class="replyb" type="primary" size="medium" @click="SonReply(feedInfo.did)" v-if="!isRootReply">回复</u-button>
+		</view>
+		<u-toast ref="uToast"></u-toast>
 	</view>
 </template>
 
 <script>
-	import Comment from '@/components/comment.vue'
+	// import Comment from '@/components/comment.vue'
 	export default {
 		data() {
 			return {
+				name:'',
+				uavg:'',
 				// 动态详情
 				feedInfo: {},
 				// 评论
-				commentList: []
+				commentList: [],
+				rContents:'',
+				isreply: false,
+				isRootReply:false,
+				fid:'',
+				touid:''
 			}
 		},
 		async onLoad(params) {
 				// 获取动态详情
-				let res = await this.$u.api.getFeedInfo(params)
-				let images = res.data.images.map(one => {
-					return this.BaseFileURL + one.file
+				let res = await this.$u.api.selectThisDynamic(params)
+				let resa = await this.$u.api.selectAUser({
+					id : res.data[0].uid
 				})
+				console.log("test",resa.data.list[0])
+				// let images = res.data.images.map(one => {
+				// 	return this.BaseFileURL + one.file
+				// // })
 				this.feedInfo = {
+					...resa.data,
 					...res.data,
-					name: res.data.user.name,
-					avatar: res.data.user.avatar ? res.data.user.avatar.url : '/static/nopic.png',
-					images,
+					name: resa.data.list[0].username,
+					uavg: resa.data.list[0].uavg ? resa.data.list[0].uavg : '../static/nopic.png',
+					uid: resa.data.list[0].id,	
+					dconcern: res.data[0].dconcern,
+					did: res.data[0].did,
+					dimg: res.data[0].dimg,
+					dtime: res.data[0].dtime,
 				}
+				console.log(this.feedInfo)
 				// 获取评论
-				this.getComment();
+				let resb = await this.$u.api.selectUserReply(params)
+				console.log(resb.data.data)
+				let commentList= resb.data.data
+				console.log(commentList)
+				this.commentList = resb.data.data
 			},
-		methods:{
-		// 跳转到全部回复
-			toAllReply() {
-				uni.navigateTo({
-					url: '/pages/template/comment/reply'
-				});
-			},
-			// 点赞
-			getLike(index) {
-				this.commentList[index].isLike = !this.commentList[index].isLike;
-				if (this.commentList[index].isLike == true) {
-					this.commentList[index].likeNum++;
-				} else {
-					this.commentList[index].likeNum--;
+			methods:{
+				reply1(){
+					this.isreply = true,
+					this.isRootReply = true,
+					this.rContents = ''
+				},
+				reply2(params){
+					this.isreply = true
+					this.rContents = ''
+					console.log(params)
+					this.fid = params.fid
+					this.touid = params.touid
+				},
+				RootReply(params){
+					console.log(params)
+					let fromuid = uni.getStorageSync("uid")
+					let rContents = this.rContents
+					console.log(fromuid)
+					console.log(this.rContents)
+					let res = this.$u.api.addRootReply({
+						did : params.did,
+						touid : params.touid,
+						fromuid : fromuid,
+						rContents : rContents
+					})
+					this.$refs.uToast.show({
+						title:'回复成功',
+						type:'success'
+					})					
+					this.isreply = false
+
+				},
+				SonReply(did){
+					console.log(this.fid)
+					let fromuid = uni.getStorageSync("uid")
+					let rContents = this.rContents
+					console.log(fromuid)
+					console.log(this.rContents)
+					console.log("t",this.touid)
+					console.log("tsdas",this.fid)
+					console.log(did)
+					let res = this.$u.api.addSonReply({
+						did : did,
+						fid : this.fid,
+						touid : this.touid,
+						fromuid : fromuid,
+						rContents : rContents
+					})
+					this.$refs.uToast.show({
+						title:'回复成功',
+						type:'success'
+					})	
+					this.isreply = false
+					uni.navigateTo('/subpages/feedinfo/feedinfo?did=' + did)
+					
 				}
-			},
-			// 评论列表
-			getComment() {
-				this.commentList = [
-					{
-						id: 1,
-						name: '叶轻眉',
-						date: '12-25 18:58',
-						contentText: '我不信伊朗会没有后续反应，美国肯定会为今天的事情付出代价的',
-						url: 'https://cdn.uviewui.com/uview/template/SmilingDog.jpg',
-						allReply: 12,
-						likeNum: 33,
-						isLike: false,
-						replyList: [
-							{
-								name: 'uview',
-								contentStr: 'uview是基于uniapp的一个UI框架，代码优美简洁，宇宙超级无敌彩虹旋转好用，用它！'
-							},
-							{
-								name: '粘粘',
-								contentStr: '今天吃什么，明天吃什么，晚上吃什么，我只是一只小猫咪为什么要烦恼这么多'
-							}
-						]
-					},
-					{
-						id: 2,
-						name: '叶轻眉1',
-						date: '01-25 13:58',
-						contentText: '我不信伊朗会没有后续反应，美国肯定会为今天的事情付出代价的',
-						allReply: 0,
-						likeNum: 11,
-						isLike: false,
-						url: 'https://cdn.uviewui.com/uview/template/niannian.jpg',
-					},
-					{
-						id: 3,
-						name: '叶轻眉2',
-						date: '03-25 13:58',
-						contentText: '我不信伊朗会没有后续反应，美国肯定会为今天的事情付出代价的',
-						allReply: 0,
-						likeNum: 21,
-						isLike: false,
-						allReply: 2,
-						url: '../../../static/logo.png',
-						replyList: [
-							{
-								name: 'uview',
-								contentStr: 'uview是基于uniapp的一个UI框架，代码优美简洁，宇宙超级无敌彩虹旋转好用，用它！'
-							},
-							{
-								name: '豆包',
-								contentStr: '想吃冰糖葫芦粘豆包，但没钱5555.........'
-							}
-						]
-					},
-					{
-						id: 4,
-						name: '叶轻眉3',
-						date: '06-20 13:58',
-						contentText: '我不信伊朗会没有后续反应，美国肯定会为今天的事情付出代价的',
-						url: 'https://cdn.uviewui.com/uview/template/SmilingDog.jpg',
-						allReply: 0,
-						likeNum: 150,
-						isLike: false
-					}
-				];
 			}
-		}
 	}
 </script>
 
@@ -203,6 +195,7 @@
 			margin: 5upx 0;
 			width: 100%;
 		}
+		
 
 		.other {
 			display: flex;
@@ -214,11 +207,15 @@
 			padding: 40upx 0 20upx;
 			font-size: 24upx;
 			color: #888;
-
+			.reply {
+				color: #5677fc;
+				margin-left: 10rpx;
+			}
 			.micon {
 				padding: 10upx 20upx;
 			}
 		}
+		
 	}
 
 	.line {
@@ -278,15 +275,6 @@
 					.username {
 						font-size: 24rpx;
 						color: #999999;
-					}
-				}
-				.all-reply {
-					padding: 20rpx;
-					display: flex;
-					color: #5677fc;
-					align-items: center;
-					.more {
-						margin-left: 6rpx;
 					}
 				}
 			}

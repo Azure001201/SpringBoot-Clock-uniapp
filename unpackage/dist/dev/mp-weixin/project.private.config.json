@@ -1,4 +1,5 @@
 {
+  "setting": {},
   "condition": {
     "plugin": {
       "list": []
@@ -14,6 +15,42 @@
         {
           "name": "pages/me/me",
           "pathName": "pages/me/me",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/feeds/feeds",
+          "pathName": "pages/feeds/feeds",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/group/group",
+          "pathName": "pages/group/group",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "subpages/clock/clock",
+          "pathName": "subpages/clock/clock",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "subpages/feedinfo/feedinfo",
+          "pathName": "subpages/feedinfo/feedinfo",
+          "query": "did=1",
+          "scene": null
+        },
+        {
+          "name": "subpages/mygroup/mygroup",
+          "pathName": "subpages/mygroup/mygroup",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "subpages/creategroup/creategroup",
+          "pathName": "subpages/creategroup/creategroup",
           "query": "",
           "scene": null
         }

@@ -1,15 +1,13 @@
 <template>
-	<view class="rfeeds">
+	<view class="feeds">
 		<view class="one-feeds-box" v-for=" (feedsList, i) in showFeedsList " :key="i">
-			<view v-for=" (item, k) in feedsList " :key="item.id" class="one-feed"
+			<view v-for=" (item, k) in feedsList " :key="item.did" class="one-feed"
 				:class="k % 6 === 0 ? ( i%2===0 ? 'feed-big-left' :'feed-big-right' ) : '' ">
-				<navigator :url=" '/subpages/feedinfo/feedinfo?id=' + item.id">
-					<image :src="item.cover" class="feed-content" mode="aspectFill" :lazy-load="true" />
+				<navigator :url=" '/subpages/feedinfo/feedinfo?did=' + item.did">
+					<image :src="item.dimg" class="feed-content" mode="aspectFill" :lazy-load="true" />
 				</navigator>
 			</view>
 		</view>
-		<!-- 分享按钮组件 -->
-		<goto-share />
 	</view>
 </template>
 <script>
@@ -19,50 +17,24 @@
 				// 列表数据
 				feedsList: [],
 				// 用来展示的栅格系统的列表数据
-				showFeedsList: []
+				showFeedsList: [],
 			};
 		},
 		// 发布新的动态，跳转到当前页面，更新最新信息
 		onLoad() {
 			this.getFeeds();
 		},
-		// // 顶部下拉刷新新数据
-		// onPullDownRefresh() {
-		// 	this.feedsList = [];
-		// 	this.getFeeds();
-		// 	let timer = setTimeout(function() {
-		// 		clearTimeout(timer);
-		// 		uni.stopPullDownRefresh();
-		// 	}, 500);
-		// },
-		// // 滚动置底刷新请求数据
-		// onReachBottom() {
-		// 	this.getFeeds();
-		// },
 		methods: {
 			// 获取请求数据
 			async getFeeds() {
-				// if (this.canRequestFeeds == "yes") {
-				// 	uni.showToast({
-				// 		title: "请求中...",
-				// 		icon: "loading",
-				// 		duration: 10000,
-				// 	});
-				// 	// 设置状态
-				// this.canRequestFeeds = "no"
-				let res = await this.$u.api.getFeeds()
-				console.log(res)
-				let feeds = res.data.feeds.map(item => {
-					return {
-						id: item.id,
-						cover: this.BaseFileURL + item.images[0].file
-					}
-				})
-				this.feedsList = feeds
+				let res = await this.$u.api.selectAllDynamic()
+				console.log(res.data)
+				this.feedsList = res.data
 				let showArrList = []
-				for(let i=0;i<this.feedsList.length;i++){
-					if(i%6 === 0 && !!this.feedsList[i+5]){
-						showArrList.push(this.feedsList.slice(i,i+6))
+				for (let i = 0; i < this.feedsList.length; i++) {
+					if (i % 6 === 0 && !!this.feedsList[i + 5]) {
+						// showArrList.push(this.feedsList);
+						showArrList.push(this.feedsList.slice(i, i + 6))
 					}
 				}
 				this.showFeedsList = showArrList
@@ -71,7 +43,8 @@
 	};
 </script>
 <style lang="scss" scoped>
-	.rfeeds {
+	.feeds {
+		margin-top: 50upx;
 		background-color: #FFFFFF;
 		padding-bottom: 20upx;
 

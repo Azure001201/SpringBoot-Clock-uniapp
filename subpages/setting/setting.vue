@@ -1,25 +1,23 @@
 <template>
 	<view class="list-box">
 
-		<view @tap="gotoWeb('https://uniapp.dcloud.io/component/mp-weixin-plugin')" class="list">
+		<view @tap="gotoWeb('https://github.com/Azure001201/SpringBoot-Clock-uniapp')" class="list">
 			<view class="left-box">
-				<text>隐私政策</text>
-			</view>
-			<view class="right-box">
-				<image src="@/static/ic_arrow_smallgrey.png" />
+				<text>小程序源代码(觉得不错的话点个star吧)</text>
 			</view>
 		</view>
 
-		<view @tap="gotoWeb('https://developers.weixin.qq.com/miniprogram/dev/framework/')" class="list">
+		<view @tap="gotoWeb('https://github.com/Yuiyake/SpringBoot-Clock-master')" class="list">
 			<view class="left-box">
-				<text>用户协议</text>
-			</view>
-			<view class="right-box">
-				<image src="@/static/ic_arrow_smallgrey.png" />
+				<text>后端源代码(觉得不错的话点个star吧)</text>
 			</view>
 		</view>
-
-
+		
+		<view @tap="gotoWeb('https://github.com/Yuiyake/SpringBoot-Clock-Web')" class="list">
+			<view class="left-box">
+				<text>前端源代码(觉得不错的话点个star吧)</text>
+			</view>
+		</view>
 		<button @click="logout" class="logout">退出登录</button>
 	</view>
 </template>

@@ -67,7 +67,7 @@
 				// 用户信息输入框
 				form: {
 					account: '',
-					avatar: '',
+					uavg: '',
 					name: '',
 					password: '',
 					repassword: ''
@@ -118,13 +118,12 @@
 		created() {
 			wx.getSetting({
 				success: res => {
-					console.log(res.authSetting["scope.userInfo"])
 					if (!res.authSetting["scope.userInfo"]) {
 						uni.getUserInfo({
 							success: res => {
 								this.getUserInfoTag = true
 								this.form.name = res.userInfo.nickName
-								this.form.avatar = res.userInfo.avatarUrl
+								this.form.uavg = res.userInfo.avatarUrl
 							},
 							fail: () => {
 								console.log('用户未授权！')
@@ -144,18 +143,19 @@
 				this.show = true
 			},
 			// 跳转页面
-			// gotoWeb(url) {
-			// 	wx.navigateTo({
-			// 		url: '/pages/webview/webview?url=' + encodeURI(url)
-			// 	})
-			// },
+			gotoWeb(url) {
+				wx.navigateTo({
+					url: '/pages/webview/webview?url=' + encodeURI(url)
+				})
+			},
 			// 微信授权
-			getWechatUserInfo() {
+			getWechatUserInfo() {	
 				uni.getUserInfo({
 					success: res => {
+						console.log(res)
 						this.getUserInfoTag = true
 						this.form.name = res.userInfo.nickName
-						this.form.avatar = res.userInfo.avatarUrl
+						this.form.uavg = res.userInfo.avatarUrl
 					},
 					fail: () => {
 						console.log('用户未授权！')
@@ -177,17 +177,18 @@
 							"password": this.form.password
 						})
 						if (res.code === 200) {
+							console.log(res.data.id)
+							let uid = res.data.id
+							uni.setStorageSync('uid', uid)
 							// 登陆成功
 							this.show = false
 							let name = this.form.name
 							let loginInfo = {
 								name,
-								avatar: this.form.avatar,
+								uavg: this.form.avatar,
 							}
 							this.userLoginAction(loginInfo)
-							// this.loginAfter(res)
 							uni.$emit('meUserLogin')
-							uni.$emit('indexUserLogin')
 						} else {
 							uni.showModal({
 								title: '登陆失败',
@@ -229,23 +230,6 @@
 					repassword: ''
 				}
 			},
-			// 注册、登陆成功后设置相关逻辑
-			// async loginAfter(token) {
-			// 	this.show = false
-			// 	uni.setStorageSync('token', token)
-
-			// 	console.log("登陆之后触发的操作")
-
-			// 	let name = this.form.name
-			// 	let loginInfo = {
-			// 		name,
-			// 		avatar: this.form.avatar,
-			// 		// commented: res.data.user.commented
-			// 	}
-			// 	this.userLoginAction(loginInfo)
-			// 	uni.$emit('meUserLogin')
-			// 	uni.$emit('indexUserLogin')
-			// },
 			// 更改 登陆 注册 方式选择
 			sectionChange(index) {
 				switch (index) {

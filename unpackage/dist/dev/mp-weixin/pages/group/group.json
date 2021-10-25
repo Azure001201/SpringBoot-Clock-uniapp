@@ -1,5 +1,9 @@
 {
   "navigationStyle": "custom",
   "enablePullDownRefresh": true,
-  "usingComponents": {}
+  "usingComponents": {
+    "u-search": "/node-modules/uview-ui/components/u-search/u-search",
+    "u-swipe-action": "/node-modules/uview-ui/components/u-swipe-action/u-swipe-action",
+    "u-toast": "/node-modules/uview-ui/components/u-toast/u-toast"
+  }
 }

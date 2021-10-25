@@ -13,35 +13,35 @@
 		<view class="view-circle" />
 		<!-- 打卡选项卡 -->
 		<view class="clock_in_type">
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(0)">
 				<text class="iconfont icon-xueshengdushu"></text>
 				<text class="detail">\n学习</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(1)">
 				<text class="iconfont icon-dati "></text>
 				<text class="detail">\n练字</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(2)">
 				<text class="iconfont icon-yueliang"></text>
 				<text class="detail">\n早睡</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(3)">
 				<text class="iconfont icon-richu"></text>
 				<text class="detail">\n早起</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(4)">
 				<text class="iconfont icon-paobu"></text>
 				<text class="detail">\n运动</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(5)">
 				<text class="iconfont icon-sheng"></text>
 				<text class="detail">\n省钱</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(6)">
 				<text class="iconfont icon-jinyong"></text>
 				<text class="detail">\n禁X</text>
 			</view>
-			<view class="t1" @tap.stop="gotoClock()">
+			<view class="t1" @tap.stop="gotoClock(7)">
 				<text class="iconfont icon-shenglvehao"></text>
 				<text class="detail">\n其他</text>
 			</view>
@@ -59,7 +59,7 @@
 		data() {
 			return{
 				list:[
-					'孙烧杯太可爱了吧孙烧杯太可爱了吧孙烧杯太可爱了吧孙烧杯太可爱了吧孙烧杯太可爱了吧孙烧杯太可爱了吧',
+					'测试一下公告testtest，测试一下公告testtest，测试一下公告testtest，测试一下公告testtest',
 					]
 			}
 		},
@@ -70,9 +70,9 @@
 			...mapState(['loginState', 'userInfo'])
 		},
 		methods: {
-			gotoClock(){
+			gotoClock(n){
 				uni.navigateTo({
-					url:"/subpages/clock/clock"
+					url:"/subpages/clock/clock?index="+n
 				})
 			},
 		

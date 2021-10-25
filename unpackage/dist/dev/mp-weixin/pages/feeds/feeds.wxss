@@ -24,11 +24,12 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.rfeeds.data-v-b8cacd9c {
+.feeds.data-v-b8cacd9c {
+  margin-top: 50rpx;
   background-color: #FFFFFF;
   padding-bottom: 20rpx;
 }
-.rfeeds .one-feeds-box.data-v-b8cacd9c {
+.feeds .one-feeds-box.data-v-b8cacd9c {
   width: 704rpx;
   margin: 4rpx 22rpx 0 22rpx;
   display: grid;
@@ -38,44 +39,44 @@
   grid-column-gap: 4rpx;
   background-color: #DADADA;
 }
-.rfeeds .one-feeds-box .one-feed.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed.data-v-b8cacd9c {
   position: relative;
 }
-.rfeeds .one-feeds-box .one-feed .feed-content.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed .feed-content.data-v-b8cacd9c {
   width: 232rpx;
   height: 232rpx;
   border: 1px solid #EEEEEE;
   border-radius: 4rpx;
 }
-.rfeeds .one-feeds-box .one-feed .icon.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed .icon.data-v-b8cacd9c {
   position: absolute;
   right: 10rpx;
   top: 10rpx;
 }
-.rfeeds .one-feeds-box .one-feed .icon .play-icon.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed .icon .play-icon.data-v-b8cacd9c {
   width: 40rpx;
   height: 40rpx;
 }
-.rfeeds .one-feeds-box .one-feed.feed-big-left.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed.feed-big-left.data-v-b8cacd9c {
   grid-column-start: 1;
   grid-column-end: 3;
   grid-row-start: 1;
   grid-row-end: 3;
   background-color: #DADADA;
 }
-.rfeeds .one-feeds-box .one-feed.feed-big-left .feed-content.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed.feed-big-left .feed-content.data-v-b8cacd9c {
   width: 466rpx;
   height: 466rpx;
   border: 1px solid #EEEEEE;
 }
-.rfeeds .one-feeds-box .one-feed.feed-big-right.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed.feed-big-right.data-v-b8cacd9c {
   grid-column-start: 2;
   grid-column-end: 4;
   grid-row-start: 1;
   grid-row-end: 3;
   background-color: #DADADA;
 }
-.rfeeds .one-feeds-box .one-feed.feed-big-right .feed-content.data-v-b8cacd9c {
+.feeds .one-feeds-box .one-feed.feed-big-right .feed-content.data-v-b8cacd9c {
   width: 466rpx;
   height: 466rpx;
   border: 1px solid #EEEEEE;
